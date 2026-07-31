@@ -2,13 +2,13 @@
 
 A lightweight AI-powered code review service built with FastAPI for the Xsolla AI-First Engineering Internship Technical Assessment.
 
-The service accepts a unified git diff, performs static rule-based analysis using a mock provider, and returns review findings through a REST API.
+The service accepts a unified Git diff, performs static rule-based analysis using a mock provider, and returns review findings through a REST API.
 
 ---
 
 ## Features
 
-- Review unified git diffs
+- Review unified Git diffs
 - Rule-based mock code review
 - Security, correctness, performance and style findings
 - Prompt injection detection
@@ -29,6 +29,8 @@ The service accepts a unified git diff, performs static rule-based analysis usin
 - Uvicorn
 - Pytest
 - HTTPX
+- Docker
+- Git
 
 ---
 
@@ -61,7 +63,7 @@ requirements.txt
 Clone the repository.
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/stsofeah/xsolla-ai-review.git
 cd xsolla-ai-review
 ```
 
@@ -79,7 +81,7 @@ Activate the virtual environment.
 .venv\Scripts\activate
 ```
 
-### Install dependencies
+Install dependencies.
 
 ```bash
 pip install -r requirements.txt
@@ -107,17 +109,13 @@ http://127.0.0.1:8000/docs
 python -m pytest
 ```
 
-Current automated tests:
+Current automated tests cover:
 
 - Mock provider rules
 - API endpoints
 - Path tracking
 - Line tracking
 - Chunk counting
-
-```
-12 tests passed
-```
 
 ---
 
@@ -129,13 +127,13 @@ Current automated tests:
 POST /v1/reviews
 ```
 
-Returns
+Returns:
 
 ```http
 202 Accepted
 ```
 
-Example response
+Example response:
 
 ```json
 {
@@ -152,7 +150,7 @@ Example response
 GET /v1/reviews/{jobId}
 ```
 
-Returns
+Returns:
 
 ```http
 200 OK
@@ -164,7 +162,7 @@ or
 404 Not Found
 ```
 
-Example response
+Example response:
 
 ```json
 {
@@ -184,7 +182,7 @@ Example response
 ## Mock Detection Rules
 
 | Rule ID | Description |
-|----------|-------------|
+|---------|-------------|
 | MOCK-001 | Detects use of `eval()` |
 | MOCK-002 | Detects hardcoded API keys or secrets |
 | MOCK-003 | Detects SQL string concatenation |
@@ -192,7 +190,7 @@ Example response
 | MOCK-005 | Detects loose null comparison |
 | MOCK-006 | Detects JSON deep clone pattern |
 | MOCK-007 | Detects leftover `console.log()` statements |
-| MOCK-008 | Detects unresolved TODO/FIXME comments |
+| MOCK-008 | Detects unresolved `TODO` / `FIXME` comments |
 | MOCK-INJ | Detects prompt injection attempts |
 
 ---
@@ -209,9 +207,10 @@ Implemented features:
 - ✅ Line number tracking
 - ✅ Chunk counting
 - ✅ Rate limiting
-- ✅ Swagger documentation
+- ✅ Swagger API documentation
 - ✅ Unit tests
-- ✅ API integration tests
+- ✅ API endpoint tests
+- ✅ Docker support
 
 ---
 
