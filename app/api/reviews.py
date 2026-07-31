@@ -1,7 +1,8 @@
+import json
 import uuid
 
 from fastapi import APIRouter, Depends, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
 from app.core.security import require_bearer_token
 from app.models.review import ReviewRequest, ReviewResponse
@@ -37,6 +38,7 @@ def create_review(request: ReviewRequest) -> ReviewResponse:
         )
 
     job_id = str(uuid.uuid4())
+
     create_job(job_id, request)
 
     findings = review_diff(
@@ -85,3 +87,49 @@ def get_review(job_id: str):
         "findings": job.get("findings"),
         "usage": job.get("usage"),
     }
+
+
+@router.get(
+    "/v1/reviews/{job_id}/stream",
+    dependencies=[Depends(require_bearer_token)],
+)
+def stream_review(job_id: str):
+
+    job = get_job(job_id)
+
+    if job is None:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={
+                "error": {
+                    "code": "not_found",
+                    "message": "Job not found",
+                }
+            },
+        )
+
+    def event_generator():
+
+        # Replay status
+        yield (
+            "event: status\n"
+            f"data: {json.dumps({'status': job['status']})}\n\n"
+        )
+
+        # Replay every finding
+        for finding in job["findings"]:
+            yield (
+                "event: finding\n"
+                f"data: {json.dumps(finding)}\n\n"
+            )
+
+        # Done event
+        yield (
+            "event: done\n"
+            f"data: {json.dumps({'total': len(job['findings']), 'usage': job['usage']})}\n\n"
+        )
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+    )
