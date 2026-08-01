@@ -1,10 +1,14 @@
 from app.models.review import ReviewRequest
 
 jobs: dict[str, dict[str, object]] = {}
+idempotency_store: dict[str, dict[str, object]] = {}
+
+cache_store: dict[str, dict[str, object]] = {}
 
 MAX_CONCURRENT = 4
 processing_jobs = 0
 waiting_jobs: list[str] = []
+
 
 def create_job(job_id: str, request: ReviewRequest) -> dict[str, object]:
     job = {
@@ -12,6 +16,7 @@ def create_job(job_id: str, request: ReviewRequest) -> dict[str, object]:
         "status": "queued",
         "findings": [],
         "usage": {},
+        "error": None,
         "diff": request.diff,
         "provider": request.options.provider,
         "maxFindings": request.options.maxFindings,
@@ -23,12 +28,33 @@ def create_job(job_id: str, request: ReviewRequest) -> dict[str, object]:
 def get_job(job_id: str) -> dict[str, object] | None:
     return jobs.get(job_id)
 
+def get_cache(cache_key: str) -> dict[str, object] | None:
+    return cache_store.get(cache_key)
+
+
+def save_cache(
+    cache_key: str,
+    findings: list[dict[str, object]],
+    usage: dict[str, object],
+) -> None:
+    cache_store[cache_key] = {
+        "findings": findings,
+        "usage": usage,
+    }
 
 def update_job_status(job_id: str, status: str) -> dict[str, object] | None:
     job = jobs.get(job_id)
     if job is None:
         return None
     job["status"] = status
+    return job
+
+
+def set_job_error(job_id: str, error: str) -> dict[str, object] | None:
+    job = jobs.get(job_id)
+    if job is None:
+        return None
+    job["error"] = error
     return job
 
 

@@ -1,5 +1,12 @@
-from fastapi.testclient import TestClient
+import os
 
+os.environ["API_TOKEN"] = "sofeah-xsolla-2026-review"
+
+HEADERS = {
+    "Authorization": "Bearer sofeah-xsolla-2026-review"
+}
+
+from fastapi.testclient import TestClient
 from app.main import app
 
 client = TestClient(app)
@@ -8,6 +15,7 @@ client = TestClient(app)
 def test_create_review():
     response = client.post(
         "/v1/reviews",
+        headers=HEADERS,
         json={
             "diff": "+++ b/test.js\n@@ -1,0 +1 @@\n+eval(userInput)"
         },
@@ -24,6 +32,7 @@ def test_create_review():
 def test_get_review():
     create_response = client.post(
         "/v1/reviews",
+        headers=HEADERS,
         json={
             "diff": "+++ b/test.js\n@@ -1,0 +1 @@\n+eval(userInput)"
         },
@@ -31,7 +40,10 @@ def test_get_review():
 
     job_id = create_response.json()["jobId"]
 
-    response = client.get(f"/v1/reviews/{job_id}")
+    response = client.get(
+        f"/v1/reviews/{job_id}",
+        headers=HEADERS,
+    )
 
     assert response.status_code == 200
 
@@ -43,7 +55,10 @@ def test_get_review():
 
 
 def test_get_review_not_found():
-    response = client.get("/v1/reviews/not-found")
+    response = client.get(
+        "/v1/reviews/not-found",
+        headers=HEADERS,
+    )
 
     assert response.status_code == 404
 

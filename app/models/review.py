@@ -1,8 +1,8 @@
+from typing import Literal
 from pydantic import BaseModel, Field
 
-
 class ReviewOptions(BaseModel):
-    provider: str = "mock"
+    provider: Literal["mock", "llm"] = "mock"
     maxFindings: int = Field(default=100, ge=1)
 
 # Model request yang diterima daripada client

@@ -1,27 +1,32 @@
 # AI Diff Review Service
 
-A lightweight AI-powered code review service built with FastAPI for the Xsolla AI-First Engineering Internship Technical Assessment.
+A lightweight AI-powered code review service built with FastAPI for the **Xsolla AI-First Engineering Internship Technical Assessment**.
 
-The service accepts a unified Git diff, performs static rule-based analysis using a mock provider, and returns review findings through a REST API.
+The service accepts a unified Git diff, performs asynchronous AI-style code review using a deterministic mock provider, and returns structured review findings through a REST API.
 
 ---
 
-## Features
+# Features
 
 - Review unified Git diffs
-- Rule-based mock code review
+- Asynchronous review processing
+- Rule-based mock code review provider
 - Security, correctness, performance and style findings
 - Prompt injection detection
 - Path and line number tracking
 - Chunk counting
 - In-memory job storage
+- Response caching
+- Idempotency support
+- Server-Sent Events (SSE) streaming
 - Rate limiting (30 requests per minute)
 - Swagger API documentation
 - Unit tests using pytest
+- Docker support
 
 ---
 
-## Tech Stack
+# Tech Stack
 
 - Python 3.14
 - FastAPI
@@ -34,12 +39,14 @@ The service accepts a unified Git diff, performs static rule-based analysis usin
 
 ---
 
-## Project Structure
+# Project Structure
 
 ```text
 app/
 ├── api/
 │   └── reviews.py
+├── core/
+│   └── security.py
 ├── models/
 │   └── review.py
 ├── services/
@@ -52,13 +59,14 @@ tests/
 ├── test_mock_provider.py
 └── test_reviews_api.py
 
+Dockerfile
 README.md
 requirements.txt
 ```
 
 ---
 
-## Installation
+# Installation
 
 Clone the repository.
 
@@ -81,6 +89,12 @@ Activate the virtual environment.
 .venv\Scripts\activate
 ```
 
+### macOS / Linux
+
+```bash
+source .venv/bin/activate
+```
+
 Install dependencies.
 
 ```bash
@@ -89,13 +103,13 @@ pip install -r requirements.txt
 
 ---
 
-## Run the Application
+# Run the Application
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-The API documentation is available at:
+API documentation:
 
 ```text
 http://127.0.0.1:8000/docs
@@ -103,7 +117,47 @@ http://127.0.0.1:8000/docs
 
 ---
 
-## Run Tests
+# Authentication
+
+All protected endpoints require a Bearer token.
+
+Example:
+
+```http
+Authorization: Bearer sofeah-xsolla-2026-review
+```
+
+The API token is configured using the environment variable:
+
+```text
+API_TOKEN
+```
+
+Example (PowerShell):
+
+```powershell
+$env:API_TOKEN="sofeah-xsolla-2026-review"
+```
+
+---
+
+# Run with Docker
+
+Build the Docker image.
+
+```bash
+docker build -t xsolla-ai-review .
+```
+
+Run the container.
+
+```bash
+docker run -p 8000:8000 -e API_TOKEN=sofeah-xsolla-2026-review xsolla-ai-review
+```
+
+---
+
+# Run Tests
 
 ```bash
 python -m pytest
@@ -112,16 +166,18 @@ python -m pytest
 Current automated tests cover:
 
 - Mock provider rules
-- API endpoints
+- Review API endpoints
+- Authentication
+- Job retrieval
 - Path tracking
 - Line tracking
 - Chunk counting
 
 ---
 
-## API Endpoints
+# API Endpoints
 
-### Create Review
+## Create Review
 
 ```http
 POST /v1/reviews
@@ -144,7 +200,7 @@ Example response:
 
 ---
 
-### Get Review
+## Get Review
 
 ```http
 GET /v1/reviews/{jobId}
@@ -179,10 +235,20 @@ Example response:
 
 ---
 
-## Mock Detection Rules
+## Stream Review Progress (SSE)
+
+```http
+GET /v1/reviews/{jobId}/stream
+```
+
+Returns a **Server-Sent Events (SSE)** stream containing review progress and the final review result.
+
+---
+
+# Mock Detection Rules
 
 | Rule ID | Description |
-|---------|-------------|
+|----------|-------------|
 | MOCK-001 | Detects use of `eval()` |
 | MOCK-002 | Detects hardcoded API keys or secrets |
 | MOCK-003 | Detects SQL string concatenation |
@@ -195,17 +261,21 @@ Example response:
 
 ---
 
-## Project Status
+# Project Status
 
 Implemented features:
 
 - ✅ REST API with FastAPI
+- ✅ Asynchronous review processing
 - ✅ In-memory job storage
 - ✅ Mock review provider
 - ✅ Multiple detection rules
 - ✅ Path tracking
 - ✅ Line number tracking
 - ✅ Chunk counting
+- ✅ Response caching
+- ✅ Idempotency support
+- ✅ Server-Sent Events (SSE)
 - ✅ Rate limiting
 - ✅ Swagger API documentation
 - ✅ Unit tests
@@ -214,6 +284,8 @@ Implemented features:
 
 ---
 
-## Notes
+# Notes
 
-This project was developed as part of the Xsolla AI-First Engineering Internship Technical Assessment.
+This project was developed as part of the **Xsolla AI-First Engineering Internship Technical Assessment**.
+
+The service was implemented using the deterministic mock provider specified in the assessment and includes support for response caching, idempotency, asynchronous processing, Server-Sent Events (SSE), and rate limiting.
