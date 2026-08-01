@@ -149,22 +149,32 @@ Current result:
 
 # AI Tools Used
 
-The following AI tools were used during development:
+- ChatGPT
+  - Architecture planning
+  - Debugging
+  - API design discussions
+  - Test development
+  - Documentation
 
-- ChatGPT (architecture discussion, debugging, implementation guidance, documentation)
-- GitHub Copilot (code completion)
+- Cursor AI
+  - Code review
+  - Code generation
+  - Refactoring suggestions
+  - Implementation verification
 
-All generated code was reviewed, tested, and modified before being committed.
+- GitHub
+  - Version control
+
+- Render
+  - Application deployment
 
 ---
 
 # AI Suggestion Rejected
 
-One AI-generated suggestion proposed bypassing authentication during API testing.
+One AI-generated suggestion was to simplify the implementation by removing the asynchronous processing flow and handling reviews synchronously.
 
-This suggestion was rejected because the assessment explicitly requires Bearer authentication on all `/v1/*` endpoints.
-
-Instead, the tests were updated to include the required Authorization header.
+I rejected this suggestion because the assessment explicitly requires asynchronous job processing. Keeping the background task implementation better matches the required API contract and job lifecycle.
 
 ---
 
